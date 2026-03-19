@@ -34,7 +34,7 @@
             </div>
             {% endif %}
 
-            <form action="/registro" method="post">
+            <form action="{{ request.url_for('registro') }}" method="post">
                 <div class="form-group">
                     <label for="username">Nombre de Usuario o Correo</label>
                     <input type="text" id="username" name="username" placeholder="ej: desarrollador_aca" required
@@ -53,11 +53,11 @@
             </form>
 
             <p style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
-                ¿Ya tienes cuenta? <a href="/login"
+                ¿Ya tienes cuenta? <a href="{{ request.url_for('login') }}"
                     style="color: var(--primary); font-weight: 600; text-decoration: none;">Inicia Sesión</a>
             </p>
             <div style="text-align: center; margin-top: 1rem;">
-                <a href="/"
+                <a href="{{ request.url_for('home') }}"
                     style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.3s;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

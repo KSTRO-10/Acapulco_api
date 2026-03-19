@@ -17,7 +17,7 @@
     <div class="app-background"></div>
 
     <nav class="navbar">
-        <a href="/admin" class="navbar-brand">Administración</a>
+        <a href="{{ request.url_for('admin_dashboard') }}" class="navbar-brand">Administración</a>
         <div class="nav-links" style="display: flex; align-items: center; gap: 0.5rem;">
             <button id="theme-toggle" class="btn-outline"
                 style="padding: 0.5rem 1rem; border-color: var(--glass-border); display: flex; align-items: center; gap: 0.4rem;">
@@ -27,8 +27,8 @@
                 </svg>
                 <span>Tema</span>
             </button>
-            <a href="/eventos" style="font-weight: 600;">Ver Catálogo</a>
-            <a href="/logout" style="color: #ef4444; font-weight: 600;">Cerrar Sesión</a>
+            <a href="{{ request.url_for('visor_eventos') }}" style="font-weight: 600;">Ver Catálogo</a>
+            <a href="{{ request.url_for('logout') }}" style="color: #ef4444; font-weight: 600;">Cerrar Sesión</a>
         </div>
     </nav>
 
@@ -69,7 +69,7 @@
                     Nuevo Evento
                 </h2>
 
-                <form id="evento-form" action="/admin/evento" method="post">
+                <form id="evento-form" action="{{ request.url_for('crear_evento') }}" method="post">
                     <input type="hidden" name="evento_id" id="evento_id" value="">
                     <div class="form-group">
                         <label>Nombre del Evento</label>
@@ -213,7 +213,7 @@
                                         </button>
 
                                         <!-- Botón Eliminar -->
-                                        <form action="/admin/evento/eliminar" method="post" style="margin: 0;"
+                                        <form action="{{ request.url_for('eliminar_evento') }}" method="post" style="margin: 0;"
                                             onsubmit="return confirm('¿Estás seguro de que quieres eliminar este evento permanentemente?');">
                                             <input type="hidden" name="evento_id" value="{{ e.id }}">
                                             <button type="submit" class="btn-outline"
@@ -302,7 +302,7 @@
                         <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                             <code id="json-url-display"
                                 style="flex: 1; background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; font-size: 0.85rem; color: var(--text-muted); word-break: break-all;">
-                                /api/eventos?api_key={{ api_key }}
+                                {{ request.url_for('api_eventos') }}?api_key={{ api_key }}
                             </code>
                             <button id="btn-ver-json" onclick="cargarJSON()"
                                 style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-weight: 600; font-family: inherit; font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s;">
@@ -380,7 +380,7 @@
                 document.getElementById('cancel-edit-btn').style.display = "block";
 
                 const form = document.getElementById('evento-form');
-                form.action = "/admin/evento/editar";
+                form.action = "{{ request.url_for('editar_evento') }}";
 
                 // Llenar campos
                 document.getElementById('evento_id').value = id;
@@ -404,7 +404,7 @@
             document.getElementById('cancel-edit-btn').style.display = "none";
 
             const form = document.getElementById('evento-form');
-            form.action = "/admin/evento";
+            form.action = "{{ request.url_for('crear_evento') }}";
             form.reset();
             document.getElementById('evento_id').value = "";
         }
@@ -442,7 +442,7 @@
             output.value = '';
 
             try {
-                const res = await fetch(`/api/eventos?api_key=${apiKey}`);
+                const res = await fetch(`{{ request.url_for('api_eventos') }}?api_key=${apiKey}`);
                 const data = await res.json();
                 output.value = JSON.stringify(data, null, 2);
                 status.style.color = '#10b981';

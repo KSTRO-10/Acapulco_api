@@ -113,7 +113,7 @@
             </div>
             {% endif %}
 
-            <form action="/login" method="post">
+            <form action="{{ request.url_for('login') }}" method="post">
                 <div class="form-group">
                     <div class="label-row">
                         <label for="username">Usuario o Correo</label>
@@ -139,12 +139,12 @@
             </form>
 
             <p style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
-                ¿No tienes cuenta? <a href="/registro"
+                ¿No tienes cuenta? <a href="{{ request.url_for('registro') }}"
                     style="color: var(--primary); font-weight: 600; text-decoration: none;">Regístrate aquí</a>
             </p>
 
             <div style="text-align: center; margin-top: 1.5rem;">
-                <a href="/"
+                <a href="{{ request.url_for('home') }}"
                     style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.3s; font-weight: 500;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

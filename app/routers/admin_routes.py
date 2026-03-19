@@ -14,7 +14,7 @@ def check_admin_session(request: Request):
         return False
     return True
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse, name="admin_dashboard")
 def admin_dashboard(request: Request):
     # Proteger ruta para ADMIN
     if not check_admin_session(request):
@@ -54,7 +54,7 @@ def admin_dashboard(request: Request):
         }
     )
 
-@router.post("/evento")
+@router.post("/evento", name="crear_evento")
 def crear_evento(
     request: Request,
     nombre: str = Form(...),
@@ -114,7 +114,7 @@ def crear_evento(
         }
     )
 
-@router.post("/evento/eliminar")
+@router.post("/evento/eliminar", name="eliminar_evento")
 def eliminar_evento(request: Request, evento_id: int = Form(...)):
     if not check_admin_session(request):
         return RedirectResponse(url="/login", status_code=303)
@@ -128,7 +128,7 @@ def eliminar_evento(request: Request, evento_id: int = Form(...)):
     
     return RedirectResponse(url="/admin", status_code=303)
 
-@router.post("/evento/editar")
+@router.post("/evento/editar", name="editar_evento")
 def editar_evento(
     request: Request,
     evento_id: int = Form(...),

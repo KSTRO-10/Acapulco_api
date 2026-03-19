@@ -23,7 +23,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi import Form
 from app.database import get_connection
 
-@app.get("/")
+@app.get("/", name="home")
 def home(request: Request):
     user = request.session.get("user")
     rol = request.session.get("rol")
@@ -38,7 +38,7 @@ def home(request: Request):
     # Si no hay sesión, al login
     return RedirectResponse(url="/login", status_code=303)
 
-@app.get("/login", response_class=HTMLResponse)
+@app.get("/login", response_class=HTMLResponse, name="login")
 def login_page(request: Request):
     user = request.session.get("user")
     if user:
@@ -82,7 +82,7 @@ def login_post(request: Request, username: str = Form(...), password: str = Form
             {"request": request, "error": "Credenciales inválidas"}
         )
 
-@app.get("/registro", response_class=HTMLResponse)
+@app.get("/registro", response_class=HTMLResponse, name="registro")
 def registro_page(request: Request):
     user = request.session.get("user")
     if user:
@@ -126,12 +126,12 @@ def registro_post(request: Request, username: str = Form(...), password: str = F
     request.session["rol"] = "consumidor"
     return RedirectResponse(url="/eventos", status_code=303)
 
-@app.get("/logout")
+@app.get("/logout", name="logout")
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
 
-@app.get("/eventos")
+@app.get("/eventos", name="visor_eventos")
 def vista_eventos(request: Request):
     # Proteger vista solo para logueados (pueden ser consumidor o admin)
     user = request.session.get("user")
