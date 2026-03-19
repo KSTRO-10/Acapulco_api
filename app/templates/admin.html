@@ -116,8 +116,18 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="form-submit-btn" class="btn-primary btn-block"
-                        style="margin-top: 1rem;">Publicar Evento</button>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button type="submit" id="form-submit-btn" class="btn-primary"
+                            style="flex: 2;">Publicar Evento</button>
+                        <button type="button" id="btn-save-draft" class="btn-outline" onclick="saveDraft()"
+                            style="flex: 1; border-color: var(--secondary); color: var(--secondary);" title="Guardar borrador localmente">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                     <button type="button" id="cancel-edit-btn" class="btn-outline btn-block"
                         style="margin-top: 0.5rem; display: none;" onclick="cancelarEdicion()">Cancelar Edición</button>
                 </form>
@@ -160,6 +170,16 @@
                             <polyline points="8 6 2 12 8 18"></polyline>
                         </svg>
                         Ver JSON
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('drafts')" id="btn-tab-drafts"
+                        style="padding: 0.5rem 1rem; border: none; background: transparent; font-weight: 600; font-family: inherit; font-size: 1rem; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -0.65rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: text-bottom; margin-right: 0.3rem;">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Borradores
                     </button>
                 </div>
 
@@ -329,6 +349,32 @@
                     </div>
                 </div>
 
+                <!-- Panel Borradores Locales -->
+                <div class="table-container tab-content" id="tab-drafts" style="display: none;">
+                    <div style="padding: 1rem; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <h2 style="font-size: 1.25rem; color: var(--text-main); font-weight: 700;">Borradores Locales</h2>
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">En el navegador</span>
+                    </div>
+                    <div style="padding: 0;">
+                        <table id="drafts-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Fecha</th>
+                                    <th style="text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drafts-body">
+                                <tr>
+                                    <td colspan="3" style="text-align:center; padding: 2rem 1rem; color:var(--text-muted);">
+                                        No hay borradores guardados.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -467,6 +513,89 @@
                 btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar`;
             }, 2000);
         }
+
+        // Lógica de Borradores Locales
+        function getDrafts() {
+            return JSON.parse(localStorage.getItem('acapulco_drafts') || '[]');
+        }
+
+        function saveDraft() {
+            const form = document.getElementById('evento-form');
+            const draft = {
+                nombre: form.elements['nombre'].value,
+                descripcion: form.elements['descripcion'].value,
+                lugar: form.elements['lugar'].value,
+                fecha: form.elements['fecha'].value,
+                hora: form.elements['hora'].value,
+                imagen_url: form.elements['imagen_url'].value,
+                categoria: form.elements['categoria'].value,
+                precio: form.elements['precio'].value,
+                timestamp: new Date().toISOString()
+            };
+
+            if (!draft.nombre) {
+                alert('El borrador necesita al menos un nombre.');
+                return;
+            }
+
+            const drafts = getDrafts();
+            drafts.push(draft);
+            localStorage.setItem('acapulco_drafts', JSON.stringify(drafts));
+            renderDrafts();
+            alert('¡Borrador guardado localmente!');
+        }
+
+        function renderDrafts() {
+            const drafts = getDrafts();
+            const body = document.getElementById('drafts-body');
+            
+            if (drafts.length === 0) {
+                body.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 2rem 1rem; color:var(--text-muted);">No hay borradores guardados.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = drafts.map((d, index) => `
+                <tr>
+                    <td><strong style="color: var(--text-main);">${d.nombre}</strong></td>
+                    <td><span class="badge" style="background: var(--bg-color); color: var(--text-main);">${d.fecha || 'Sin fecha'}</span></td>
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <button onclick="applyDraft(${index})" class="btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: var(--primary); color: var(--primary);">Cargar</button>
+                            <button onclick="deleteDraft(${index})" class="btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: #ef4444; color: #ef4444;">Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function applyDraft(index) {
+            const drafts = getDrafts();
+            const d = drafts[index];
+            const form = document.getElementById('evento-form');
+
+            form.elements['nombre'].value = d.nombre;
+            form.elements['descripcion'].value = d.descripcion;
+            form.elements['lugar'].value = d.lugar;
+            form.elements['fecha'].value = d.fecha;
+            form.elements['hora'].value = d.hora;
+            form.elements['imagen_url'].value = d.imagen_url;
+            form.elements['categoria'].value = d.categoria;
+            form.elements['precio'].value = d.precio;
+
+            switchTab('eventos'); // Volver a la pestaña de eventos para ver el formulario (aunque el formulario es fijo a la izquierda)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteDraft(index) {
+            if (!confirm('¿Eliminar este borrador?')) return;
+            const drafts = getDrafts();
+            drafts.splice(index, 1);
+            localStorage.setItem('acapulco_drafts', JSON.stringify(drafts));
+            renderDrafts();
+        }
+
+        // Inicializar borradores al cargar
+        document.addEventListener('DOMContentLoaded', renderDrafts);
     </script>
 </body>
 
