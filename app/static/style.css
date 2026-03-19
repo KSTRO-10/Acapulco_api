@@ -134,6 +134,12 @@ body {
   letter-spacing: -0.5px;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .nav-links a {
   margin-left: 1.5rem;
   text-decoration: none;
@@ -250,6 +256,19 @@ body {
   background: var(--surface);
   border-color: var(--primary);
   color: var(--primary);
+}
+
+#theme-toggle {
+  padding: 0.5rem 1rem;
+  border-color: var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+#theme-toggle svg {
+  color: var(--text-muted);
 }
 
 /* Container */
@@ -468,6 +487,11 @@ body.dark-mode .form-group textarea {
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
+.admin-header {
+  margin-bottom: 2rem;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Table Styles for Admin */
 .admin-layout {
   display: grid;
@@ -588,5 +612,102 @@ tr:hover td {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* --- Responsive Media Queries --- */
+
+/* Tablets and small desktops */
+@media (max-width: 1024px) {
+  .hero h1 {
+    font-size: 3rem;
+  }
+  
+  .container {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .nav-links a {
+    margin-left: 0;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  .hero {
+    padding: 4rem 1rem 3rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2.2rem;
+    letter-spacing: -0.5px;
+  }
+
+  .btn-primary, .btn-outline {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .card h3 {
+    font-size: 1.25rem;
+  }
+
+  .table-container {
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  th, td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
   }
 }
