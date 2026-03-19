@@ -7,7 +7,7 @@ from typing import Optional
 
 router = APIRouter(prefix="/api")
 
-@router.get("/eventos")
+@router.get("/eventos", name="api_eventos")
 def eventos(
     request: Request, 
     formato: str = "json", 

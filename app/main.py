@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import os
->>>>>>> 19ed2aa1da0a602905dbb3b1c2428029cbb1907d
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -15,18 +12,12 @@ app = FastAPI(title="API Turismo Acapulco")
 # Añadir middleware de sesión
 app.add_middleware(SessionMiddleware, secret_key="super_secret_key_acapulco")
 
-<<<<<<< HEAD
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
-templates = Jinja2Templates(directory="app/templates")
-=======
 # Rutas absolutas para evitar errores 500 en Vercel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
->>>>>>> 19ed2aa1da0a602905dbb3b1c2428029cbb1907d
 
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi import Form
