@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+mysql-connector-python
+dicttoxml
+starlette
+itsdangerous
+python-multipart
+<<<<<<< HEAD
+python-dotenv
+=======
+python-dotenv
+jinja2
+aiofiles
+>>>>>>> 19ed2aa1da0a602905dbb3b1c2428029cbb1907d

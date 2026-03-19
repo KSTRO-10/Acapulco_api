@@ -1,0 +1,150 @@
+U4. Investigación. Creación de un WS (equipo)
+
+================================================================================
+1. DESCRIPCIÓN DE LAS HERRAMIENTAS UTILIZADAS
+================================================================================
+Para el desarrollo de este Web Service (WS) enfocado en el "Turismo en Acapulco", se seleccionó un modelo basado en la arquitectura REST utilizando tecnologías modernas de alto rendimiento:
+
+• Lenguaje Base: Python 3.x
+  Motivación: Python es un lenguaje altamente legible y cuenta con un ecosistema robusto para el desarrollo backend.
+  
+• Framework Backend: FastAPI
+  Motivación: Es un framework web moderno y de alto rendimiento para construir APIs con Python basado en tipos estándar. Provee validación automática de datos, generación automática de documentación (Swagger UI) y un soporte nativo para asincronismo.
+  
+• Servidor ASGI: Uvicorn
+  Motivación: Servidor web ultrarrápido utilizado para ejecutar la aplicación FastAPI en entorno local y de producción.
+
+• Base de Datos Relacional: MySQL (via mysql-connector-python)
+  Motivación: Sistema gestor de bases de datos relacionales robusto para asegurar la integridad referencial de los Eventos Creados, Estadísticas de Conexión y Gestión de Llaves de Acceso (API Keys).
+
+• Motor de Plantillas: Jinja2
+  Motivación: Para renderizar de manera dinámica el catálogo de eventos en el frontend y el panel de administración, inyectando variables de Python directamente en el código HTML.
+
+• Frontend (UI/UX): HTML5, CSS3, JavaScript Vainilla
+  Motivación: Desarrollo de interfaces modernas (incluyendo sistema de pestañas "Tabs", modo oscuro/claro, animaciones y diseño responsivo) sin depender de librerías pesadas externas, consumiendo la API de forma nativa mediante "fetch".
+
+
+================================================================================
+2. EXPLICACIÓN DE CÓMO DESARROLLAR UN WS
+================================================================================
+El desarrollo de un Web Service RESTful moderno consta de las siguientes fases metodológicas:
+
+Fase 1: Diseño de Arquitectura y Base de Datos
+- Se definen las entidades principales. En este proyecto: "eventos" (catálogo de turismo), "usuarios" (consumidores y administradores) y "api_stats" (registro de tráfico).
+- Se establecen los mecanismos de seguridad. Aquí se implementó un modelo de validación por "API Key" requerida tanto por querystring como por cabeceras (Headers) HTTP.
+
+Fase 2: Configuración del Entorno y Enrutamiento (Routing)
+- Se inicializa el servidor instanciando la aplicación principal (app = FastAPI()).
+- Se separan las responsabilidades creando rutas especializadas usando "APIRouter". En el proyecto se crearon módulos como "api_routes.py" (para la entrega de JSON/XML puros) y "admin_routes.py" (para las operaciones CRUD sobre la BD).
+
+Fase 3: Desarrollo de Controladores y Modelos de Negocio
+- Se construyen las funciones que interactúan con la base de datos MySQL para extraer o insertar información.
+- Se serializan (transforman) los resultados binarios o complejos (ej. fechas y decimales) a diccionarios estándar que el framework pueda convertir a JSON o XML.
+
+Fase 4: Consumo desde el Cliente
+- Se levanta una interfaz (Frontend) que, mediante peticiones asíncronas HTTP (GET, POST, etc.), solicita la información al Web Service enviando la llave de autorización, e inyecta dinámicamente el JSON devuelto en el modelo de objetos del documento (DOM).
+
+
+================================================================================
+3. CODIFICACIÓN DEL WS (FRAGMMENTOS DEL PORYECTO "Acapulco API")
+================================================================================
+El Web Service principal se encuentra modularizado en diferentes archivos para respetar el patrón Controlador-Servicio. 
+
+A continuación, la lógica neurálgica de conexión y exposición de la API:
+
+-- Archivo: app/database.py (Gestión de la conexión)
+import mysql.connector
+
+def get_connection():
+    conn = mysql.connector.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="12345",
+        database="acapulco_api"
+    )
+    return conn
+
+-- Archivo: app/routers/api_routes.py (El Controlador del Web Service)
+from fastapi import APIRouter, Request, Depends, HTTPException, Header
+from app.database import get_connection
+
+router = APIRouter(prefix="/api")
+
+@router.get("/eventos")
+def eventos(
+    request: Request, 
+    formato: str = "json",
+    api_key: str = None,
+    x_api_key: str = Header(None)
+):
+    # 1. Validación de Seguridad (API KEY)
+    key_to_check = api_key or x_api_key
+    if not key_to_check:
+        raise HTTPException(status_code=401, detail="API Key es requerida.")
+        
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT username FROM usuarios WHERE api_key=%s", (key_to_check,))
+    user_data = cursor.fetchone()
+    if not user_data:
+        raise HTTPException(status_code=401, detail="API Key inválida.")
+
+    # 2. Extracción de Datos
+    cursor.execute("SELECT * FROM eventos")
+    data = cursor.fetchall()
+    
+    # 3. Preprocesamiento de tipos complejos (Fechas y Moneda)
+    import datetime, decimal
+    for row in data:
+        if 'fecha' in row and isinstance(row['fecha'], datetime.date):
+            row['fecha'] = str(row['fecha'])
+        if 'precio' in row and isinstance(row['precio'], decimal.Decimal):
+            row['precio'] = float(row['precio'])
+
+    cursor.close()
+    conn.close()
+
+    # 4. Devolución del JSON al cliente
+    return data
+
+
+================================================================================
+4. EJEMPLO DEL WS (CASO DE USO PRÁCTICO)
+================================================================================
+Caso Práctico: Una empresa local desea colocar un listado de los próximos eventos de Acapulco en su propia página web.
+
+Requisitos: La empresa debió registrarse en nuestro portal para obtener una "API Key" única (ej. "f1fe3c272b9a...").
+
+Petición (Request):
+El desarrollador enviará una petición HTTP GET a la siguiente URL:
+http://127.0.0.1:8000/api/eventos?api_key=f1fe3c272b9a...
+
+Respuesta del Servidor (Response):
+El Web Service valida la llave y contesta con un arreglo estructurado (JSON), listo para ser consumido:
+
+[
+  {
+    "id": 1,
+    "nombre": "Abierto Mexicano de Tenis",
+    "descripcion": "El torneo de tenis más importante de Latinoamérica.",
+    "lugar": "Arena GNP Seguros",
+    "hora": "16:00:00",
+    "fecha": "2026-02-23",
+    "imagen_url": "https://loremflickr.com/800/400/tennis",
+    "categoria": "Deportes",
+    "precio": 2500.0
+  },
+  {
+    "id": 2,
+    "nombre": "Concierto Sinfónico en el Mar",
+    "descripcion": "Disfruta de la Orquesta Filarmónica al atardecer.",
+    "lugar": "Sinfonía del Mar",
+    "hora": "18:30:00",
+    "fecha": "2026-05-10",
+    "imagen_url": "https://loremflickr.com/800/400/orchestra,ocean",
+    "categoria": "Cultura",
+    "precio": 0.0
+  }
+]

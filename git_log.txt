@@ -1,0 +1,24 @@
+commit 18de7d27128c94361782f98b9d905347e0d49ffc
+Author: Usuario Acapulco <usuario@ejemplo.com>
+Date:   Tue Mar 10 21:23:07 2026 -0600
+
+    Preparando para despliegue
+
+A	.gitignore
+A	U4_Investigacion_WS.txt
+A	app/README.md
+A	app/config.py
+A	app/database.py
+A	app/main.py
+A	app/requirements.txt
+A	app/routers/admin_routes.py
+A	app/routers/api_routes.py
+A	app/services/export_service.py
+A	app/services/stats_service.py
+A	app/sql/acapulco_database.sql
+A	app/static/style.css
+A	app/templates/admin.html
+A	app/templates/index.html
+A	app/templates/login.html
+A	app/templates/registro.html
+A	vercel.json

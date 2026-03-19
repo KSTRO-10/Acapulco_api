@@ -1,0 +1,42 @@
+================================================================================
+REPORTE DE INVESTIGACIÓN: PROYECTO "ACAPULCO API"
+================================================================================
+
+1. INTRODUCCIÓN Y CONTEXTO DEL PROYECTO
+--------------------------------------------------------------------------------
+El proyecto denominado "Acapulco API" (también conocido como Catálogo Emprendedor Digital) es un sistema informático desarrollado bajo la arquitectura Cliente-Servidor. Su objetivo principal es impulsar el turismo y la economía local del puerto de Acapulco mediante la centralización y distribución de información sobre eventos (culturales, deportivos, sociales) y negocios locales (emprendimientos).
+
+Para lograr esto, el proyecto se construyó como un "Web Service" (Servicio Web) de tipo RESTful. Esto significa que funciona como un puente de comunicación estandarizado donde diferentes aplicaciones (como páginas web o aplicaciones móviles) pueden solicitar y recibir datos en un formato universal llamado JSON. Además de ser una API, el sistema también cuenta con una interfaz web integrada (Frontend) donde los usuarios pueden interactuar directamente con la plataforma.
+
+Tecnologías Fundamentales Empleadas:
+• Lenguaje de Programación: Python. Se eligió por su sintaxis clara y su gran popularidad en el desarrollo de servidores web.
+• Framework (Entorno de Trabajo): FastAPI. Es una herramienta moderna para Python que permite crear APIs de manera muy rápida y eficiente, ofreciendo ventajas como la validación automática de datos y la generación de documentación técnica por sí misma.
+• Motor de Plantillas: Jinja2. Se utiliza para unir el código de Python con el diseño en HTML, permitiendo crear páginas web dinámicas que cambian según la información de la base de datos.
+• Seguridad y Control de Acceso: El sistema implementa un modelo de roles. Existen Administradores (con control total), Emprendedores (que gestionan sus propios negocios) y Visitantes. Además, para acceder a los datos estructurados del Web Service, los desarrolladores externos deben utilizar una "API Key" de validación.
+
+2. PROCESO DE ALOJAMIENTO (HOSTING) EN LA PLATAFORMA VERCEL
+--------------------------------------------------------------------------------
+Originalmente, el proyecto se desarrolló y probó en un entorno local (es decir, en la computadora del programador, usando "localhost"). Sin embargo, para que cualquier persona en el mundo pudiera acceder a él, era necesario subirlo a un servidor público en Internet. Para este propósito, se seleccionó **Vercel**.
+
+Vercel es una plataforma de servicios en la nube especializada en el alojamiento web. Aunque es muy conocida por alojar sitios web estáticos o de JavaScript, también permite alojar aplicaciones complejas de Python a través de funciones "Serverless" (sin servidor). El modelo Serverless significa que el programador no necesita configurar ni mantener un servidor físico o virtual completo, sino que Vercel ejecuta el código únicamente cuando alguien visita la página o hace una petición, ahorrando recursos.
+
+Pasos para el Despliegue en Vercel:
+1. Archivo de Configuración (vercel.json): Se creó un archivo esencial en la raíz del proyecto llamado `vercel.json`. Este archivo funciona como un manual de instrucciones para Vercel. En él, se especifica que el archivo principal de la aplicación es `app/main.py` y se utiliza el motor `@vercel/python` para poder interpretarlo y ejecutarlo.
+2. Gestión de Dependencias (requirements.txt): Vercel necesita saber qué herramientas externas usa el proyecto para funcionar (como FastAPI o el conector de la base de datos). Todas estas herramientas se listan en un archivo de texto llamado `requirements.txt`. Al subir el proyecto, Vercel lee este archivo e instala todo automáticamente.
+3. Integración con GitHub (CI/CD): El proyecto se subió a un repositorio en GitHub. Desde el panel de control de Vercel, se conectó este repositorio. Gracias a esto, cada vez que el equipo de desarrollo hace una modificación en el código y la sube a GitHub (mediante el comando `git push`), Vercel detecta el cambio, reconstruye la aplicación de manera automática y actualiza la página web en tiempo real sin interrumpir el servicio.
+4. Ajustes de Código: Se tuvieron que realizar modificaciones menores en el código original, como usar "rutas absolutas" para los archivos de diseño y recursos visuales, para asegurar que Vercel pudiera encontrarlos correctamente dentro de su entorno en la nube y evitar errores de visualización (Errores 500).
+
+3. MIGRACIÓN Y CONEXIÓN A LA BASE DE DATOS EN LÍNEA (AIVEN PARA MYSQL)
+--------------------------------------------------------------------------------
+Para almacenar toda la información del catálogo (usuarios, eventos, negocios), el proyecto utiliza MySQL, que es un Sistema Gestor de Bases de Datos Relacionales (RDBMS). Al igual que el código de la aplicación, la base de datos también debía dejar de ejecutarse en la computadora local para estar disponible en Internet 24/7.
+
+Se eligió el proveedor **Aiven**, una plataforma en la nube que ofrece bases de datos como servicio gestionado.
+
+Proceso de Configuración e Integración:
+1. Creación de la Instancia en la Nube: En la plataforma de Aiven se creó un nuevo "servidor" o instancia de MySQL. Aiven proporciona de manera automática los datos de conexión necesarios para acceder a esta nueva base de datos remota:
+   • Nombre de Servidor (Host/URI): Una dirección única en Internet (ej. `mysql-proyecto-aivencloud.com`).
+   • Puerto (Port): Un número específico para la comunicación por donde viajarán los datos.
+   • Usuario y Contraseña: Credenciales de administrador seguras generadas por la plataforma.
+2. Actualización del Código de Conexión: En los archivos de Python encargados de la base de datos (como `config.py` o `database.py`), se eliminaron los datos locales (donde decía `host="localhost"` y `user="root"`) y se reemplazaron por las nuevas credenciales proporcionadas por Aiven. A partir de este cambio, la aplicación de Python se conecta a través de Internet al servidor de Aiven para leer o guardar información.
+3. Seguridad mediante Variables de Entorno: Escribir las contraseñas directamente en el código es una mala práctica de seguridad, especialmente si el código está en GitHub. Para solucionar esto, las credenciales se ocultaron utilizando "Variables de Entorno". En lugar de tener la contraseña escrita en el archivo de Python, el código le pide la contraseña al servidor donde se está ejecutando (Vercel). En el panel de control privado de Vercel (Configuración > Variables de Entorno), se introdujeron las contraseñas reales, manteniendo el sistema seguro.
+4. Poblamiento de Datos (Seeding): Finalmente, utilizando herramientas de administración de bases de datos o scripts de Python, se ejecutaron las instrucciones del lenguaje SQL para crear las tablas necesarias (`usuarios`, `eventos`) dentro del nuevo servidor de Aiven y se insertaron los datos iniciales para que el sistema pudiera comenzar a funcionar correctamente en producción.

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Turismo Acapulco</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css?v=2.1">
+    <style>
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+            animation: bounceIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-card-content h2 {
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            text-align: center;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+            font-weight: 800;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .label-row label {
+            margin-bottom: 0;
+        }
+
+        .label-row a {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .label-row a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-background"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card" style="padding: 2.5rem 2rem; max-width: 420px; width: 100%;">
+            <div class="auth-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+
+            <div class="auth-card-content">
+                <h2>Bienvenido</h2>
+                <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 8px; flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="username">Usuario o Correo</label>
+                    </div>
+                    <input type="text" id="username" name="username" placeholder="ej: adminapi" required
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="password">Contraseña</label>
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn-primary btn-block" style="padding: 0.85rem; font-size: 1rem;">
+                        Ingresar
+                    </button>
+                </div>
+            </form>
+
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
+                ¿No tienes cuenta? <a href="/registro"
+                    style="color: var(--primary); font-weight: 600; text-decoration: none;">Regístrate aquí</a>
+            </p>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="/"
+                    style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.3s; font-weight: 500;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

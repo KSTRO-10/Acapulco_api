@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turismo Acapulco | Eventos y API</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/style.css?v=2.1">
+</head>
+
+<body>
+  <!-- Background element for the entire app -->
+  <div class="app-background"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">Acapulco API</a>
+    <div class="nav-links" style="display: flex; align-items: center; gap: 0.5rem;">
+      <button id="theme-toggle" class="btn-outline"
+        style="padding: 0.5rem 1rem; border-color: var(--glass-border); display: flex; align-items: center; gap: 0.4rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <span>Tema</span>
+      </button>
+      {% if rol == 'admin' %}
+      <a href="/admin" style="font-weight: 600; color: var(--primary);">Panel Admin</a>
+      {% endif %}
+      <span
+        style="font-weight: 700; color: var(--text-main); margin-left: 0.5rem; margin-right: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--text-muted);">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        {{ user }}
+      </span>
+      <a href="/logout" style="color: #ef4444; font-weight: 600;">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <h1>Descubre Acapulco</h1>
+      <p>Explora los mejores eventos, lugares y atracciones que la Perla del Pacífico tiene para ofrecer. Consume
+        nuestra poderosa API en tus propios proyectos.</p>
+
+      <div class="format-links">
+        <a href="/api/eventos?formato=json&download=true&api_key={{ api_key }}" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: #4f46e5;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          JSON
+        </a>
+        <a href="/api/eventos?formato=xml&download=true&api_key={{ api_key }}" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: #ea580c;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <polyline points="10 13 8 15 10 17"></polyline>
+            <polyline points="14 13 16 15 14 17"></polyline>
+          </svg>
+          XML
+        </a>
+        <a href="/api/eventos?formato=txt&download=true&api_key={{ api_key }}" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: #475569;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <line x1="10" y1="9" x2="8" y2="9"></line>
+          </svg>
+          TXT
+        </a>
+      </div>
+
+      {% if api_key %}
+      <div
+        style="animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards; opacity: 0; max-width: 600px; margin: 0 auto 2.5rem; text-align: left; background: var(--surface); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+        <h3
+          style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="color: var(--primary);">
+            <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"></path>
+            <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+          </svg>
+          Tus Credenciales de API
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Utiliza esta URL base y tu llave
+          secreta para consumir los datos desde tu propia aplicación.</p>
+
+        <div style="margin-bottom: 1rem;">
+          <label
+            style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">Endpoint
+            URL</label>
+          <code
+            style="display: block; background: var(--bg-color); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.9rem; color: var(--text-main); word-break: break-all; border: 1px solid var(--border);">{{ request.base_url }}api/eventos</code>
+        </div>
+
+        <div>
+          <label
+            style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">Tu
+            API Key</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <code id="apikey-text"
+              style="flex: 1; background: var(--bg-color); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.9rem; color: var(--primary); font-weight: 600; border: 1px dashed var(--primary); display: flex; align-items: center;">{{ api_key }}</code>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div style="animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">
+        <button class="btn-primary" onclick="cargarEventos()" id="load-btn"
+          style="padding: 1rem 2rem; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Explorar Catálogo Interactivo
+        </button>
+        <button class="btn-outline" onclick="toggleVisorJSON()" id="btn-ver-json"
+          style="padding: 1rem 2rem; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.5rem; border-color: var(--primary); color: var(--primary);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          Ver JSON
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Visor JSON -->
+  <section id="visor-json" style="display: none; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div class="container" style="padding-top: 2rem; padding-bottom: 1rem;">
+      <div class="table-container" style="overflow: hidden;">
+        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin: 0;">Respuesta JSON de la API</h2>
+          <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981; font-family: monospace;">GET /api/eventos</span>
+        </div>
+        <div style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <code id="json-url-display-idx"
+              style="flex: 1; background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.85rem; font-size: 0.82rem; color: var(--text-muted); word-break: break-all;">/api/eventos?api_key={{ api_key }}</code>
+            <button onclick="cargarJSON()" id="btn-fetch-json"
+              style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-weight: 600; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: opacity 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Cargar
+            </button>
+            <button onclick="copiarJSON()" id="btn-copiar-json-idx"
+              style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 0.9rem; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copiar
+            </button>
+          </div>
+          <textarea id="json-output-idx" readonly
+            style="width: 100%; min-height: 340px; box-sizing: border-box; background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: var(--text-main); resize: vertical; outline: none; line-height: 1.6;"
+            placeholder='Presiona "Cargar" para obtener el JSON de la API...'></textarea>
+          <div id="json-status-idx" style="font-size: 0.82rem; color: var(--text-muted); min-height: 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenedor Principal -->
+  <main class="container" style="min-height: 50vh;">
+    <!-- Spinner -->
+    <div id="loading" class="spinner" style="display: none;"></div>
+
+    <!-- Grid de Resultados -->
+    <div id="resultado" class="grid">
+      <!-- Las tarjetas se inyectarán aquí -->
+    </div>
+  </main>
+
+  <script>
+    // Theme Toggle Logic
+    const themeBtn = document.getElementById('theme-toggle');
+    const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+
+    // Check if dark mode was previously set
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeBtn.innerHTML = `${sunIcon} <span>Light</span>`;
+    }
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        themeBtn.innerHTML = `${sunIcon} <span>Light</span>`;
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeBtn.innerHTML = `${moonIcon} <span>Dark</span>`;
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    async function cargarEventos() {
+      const btn = document.getElementById('load-btn');
+      const loading = document.getElementById('loading');
+      const resultado = document.getElementById('resultado');
+
+      // UI State: Cargando
+      btn.disabled = true;
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin-anim"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Cargando...`;
+      resultado.innerHTML = "";
+      loading.style.display = "block";
+
+      try {
+        const apiKey = "{{ api_key | default('') }}";
+        let fetchUrl = "/api/eventos";
+        if (apiKey) {
+          fetchUrl += `?api_key=${apiKey}`;
+        }
+        let res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error("Error en la red");
+
+        let data = await res.json();
+
+        // Simular un poco de delay para ver la animación 
+        await new Promise(r => setTimeout(r, 600));
+
+        let html = "";
+
+        if (data.length === 0) {
+          html = `<div style="text-align:center; grid-column: 1 / -1; padding: 3rem; background: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 1rem;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                                <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">No hay eventos</h3>
+                                <p style="color: var(--text-muted);">Actualmente no hay eventos disponibles en la base de datos.</p>
+                            </div>`;
+        } else {
+          data.forEach((e, index) => {
+            const animationDelay = (index < 12) ? `${(index * 0.05)}s` : '0s';
+
+            // Lógica para el badge de precio
+            let precioBadge = '';
+            if (e.precio !== undefined && e.precio !== null) {
+              const precioNum = parseFloat(e.precio);
+              if (precioNum === 0) {
+                precioBadge = `<span class="badge" style="background: rgba(16, 185, 129, 0.9); backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; position: absolute; bottom: 1rem; right: 1rem; z-index: 10; font-weight: 800; font-size: 0.95rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.2);">Entrada Libre</span>`;
+              } else {
+                precioBadge = `<span class="badge" style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: #fbbf24; position: absolute; bottom: 1rem; right: 1rem; z-index: 10; font-weight: 800; font-size: 0.95rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.1);">Costo: $${precioNum.toFixed(2)} MXN</span>`;
+              }
+            }
+
+            // Lógica para badge de categoría
+            const categoriaBadge = e.categoria ? `<span class="badge" style="margin-bottom: 0.5rem; display: inline-block;">${e.categoria}</span>` : '';
+
+            // Lógica para la imagen del evento
+            const imgHtml = e.imagen_url ? `
+              <div style="height: 200px; width: calc(100% + 3rem); overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0; margin: -1.5rem -1.5rem 1rem -1.5rem; position: relative; background: #e2e8f0;">
+                <img src="${e.imagen_url}" alt="${e.nombre}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                ${precioBadge}
+              </div>` : `<div style="position: relative; margin-bottom: 1rem;">${precioBadge}</div>`;
+
+            html += `
+                            <div class="card" style="animation-delay: ${animationDelay}; position: relative; padding: 1.5rem;">
+                                ${imgHtml}
+                                ${categoriaBadge}
+                                <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">${e.nombre}</h3>
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                                  <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);"><strong style="width: 20px; display:inline-block; color:var(--primary);">📍</strong> ${e.lugar}</p>
+                                  <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);"><strong style="width: 20px; display:inline-block; color:var(--primary);">🕒</strong> ${e.hora} &nbsp;|&nbsp; <strong>📅</strong> ${e.fecha ? e.fecha : 'N/A'}</p>
+                                </div>
+                                <hr style="margin: 1rem 0;">
+                                <p style="color: var(--text-main); line-height: 1.5; font-size: 0.95rem;">${e.descripcion}</p>
+                            </div>
+                        `;
+          });
+        }
+
+        resultado.innerHTML = html;
+
+      } catch (error) {
+        resultado.innerHTML = `<div class="alert alert-error" style="grid-column: 1/-1;">Error al cargar los eventos. Por favor intenta más tarde.</div>`;
+        console.error("Error:", error);
+      } finally {
+        loading.style.display = "none";
+        btn.disabled = false;
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Actualizar Catálogo`;
+      }
+    }
+
+    // ---- Visor JSON ----
+    function toggleVisorJSON() {
+      const visor = document.getElementById('visor-json');
+      const btn = document.getElementById('btn-ver-json');
+      if (visor.style.display === 'none') {
+        visor.style.display = 'block';
+        btn.style.background = 'var(--primary)';
+        btn.style.color = '#fff';
+        visor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        visor.style.display = 'none';
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--primary)';
+      }
+    }
+
+    async function cargarJSON() {
+      const fetchBtn = document.getElementById('btn-fetch-json');
+      const output = document.getElementById('json-output-idx');
+      const status = document.getElementById('json-status-idx');
+      const apiKey = '{{ api_key | default("") }}';
+
+      fetchBtn.disabled = true;
+      fetchBtn.style.opacity = '0.6';
+      status.textContent = 'Cargando...';
+      output.value = '';
+
+      try {
+        const res = await fetch(`/api/eventos?api_key=${apiKey}`);
+        const data = await res.json();
+        output.value = JSON.stringify(data, null, 2);
+        status.style.color = '#10b981';
+        status.textContent = `✓ ${Array.isArray(data) ? data.length + ' eventos cargados' : 'Respuesta recibida'} — ${new Date().toLocaleTimeString()}`;
+      } catch (err) {
+        output.value = 'Error al cargar el JSON: ' + err.message;
+        status.style.color = '#ef4444';
+        status.textContent = '✗ Error de conexión';
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.style.opacity = '1';
+      }
+    }
+
+    async function copiarJSON() {
+      const output = document.getElementById('json-output-idx');
+      const btn = document.getElementById('btn-copiar-json-idx');
+      if (!output.value) return;
+      await navigator.clipboard.writeText(output.value);
+      btn.textContent = '¡Copiado!';
+      setTimeout(() => {
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar`;
+      }, 2000);
+    }
+  </script>
+
+  <style>
+    .spin-anim {
+      animation: rotation 1s linear infinite;
+    }
+  </style>
+</body>
+
+</html>

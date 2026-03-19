@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | Turismo Acapulco</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css?v=2.1">
+</head>
+
+<body>
+    <div class="app-background"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Crea tu Cuenta</h2>
+            <p class="subtitle">Únete para explorar y consumir nuestra poderosa API de eventos en Acapulco.</p>
+
+            {% if error %}
+            <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/registro" method="post">
+                <div class="form-group">
+                    <label for="username">Nombre de Usuario o Correo</label>
+                    <input type="text" id="username" name="username" placeholder="ej: desarrollador_aca" required
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required
+                        autocomplete="new-password">
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn-primary btn-block">Registrarse</button>
+                </div>
+            </form>
+
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--text-muted);">
+                ¿Ya tienes cuenta? <a href="/login"
+                    style="color: var(--primary); font-weight: 600; text-decoration: none;">Inicia Sesión</a>
+            </p>
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="/"
+                    style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.3s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
